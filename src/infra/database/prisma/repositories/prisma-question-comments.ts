@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 
 
 @Injectable()
-export class PrismaQuesionCommentsRepository implements QuestionCommentsRepository {
+export class PrismaQuestionCommentsRepository implements QuestionCommentsRepository {
   create(questionComment: QuestionComment): Promise<void> {
     throw new Error("Method not implemented.");
   }
