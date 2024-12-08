@@ -5,14 +5,13 @@ import { BadRequestException, Body, Controller, Param, Post } from '@nestjs/comm
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
-const createQuestionBodySchema = z.object({
-  title: z.string(),
+const answerQuestionBodySchema = z.object({
   content: z.string(),
 })
 
-const bodyValidationPipe = new ZodValidationPipe(createQuestionBodySchema)
+const bodyValidationPipe = new ZodValidationPipe(answerQuestionBodySchema)
 
-type CreateQuestionBodySchema = z.infer<typeof createQuestionBodySchema>
+type AnswerQuestionBodySchema = z.infer<typeof answerQuestionBodySchema>
 
 @Controller('/questions/:questionId/answers')
 export class AnswerQuestionController {
@@ -20,7 +19,7 @@ export class AnswerQuestionController {
 
   @Post()
   async handle(
-    @Body(bodyValidationPipe) body: CreateQuestionBodySchema,
+    @Body(bodyValidationPipe) body: AnswerQuestionBodySchema,
     @CurrentUser() user: UserPayload,
     @Param('questionId') questionId: string
   ) {
