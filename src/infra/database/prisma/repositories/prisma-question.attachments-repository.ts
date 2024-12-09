@@ -7,6 +7,13 @@ import { PrismaService } from "../prisma.service";
 @Injectable()
 export class PrismaQuestionAttachmentsRepository implements QuestionAttachmentsRepository {
   constructor(private prisma: PrismaService) { }
+  createMany(attachments: QuestionAttachment[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  deleteMany(attachments: QuestionAttachment[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
   async findManyByQuestionId(questionId: string): Promise<QuestionAttachment[]> {
     const questionAttachments = await this.prisma.attachment.findMany({
