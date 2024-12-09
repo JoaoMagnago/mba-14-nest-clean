@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common'
 
+import { CryptographyModule } from '../cryptography/cryptography.module'
+import { DatabaseModule } from '../database/database.module'
+import { StorageModule } from '../storage/storage.module'
+
 import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question'
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student'
 import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer'
@@ -18,8 +22,7 @@ import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cas
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions'
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug'
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student'
-import { CryptographyModule } from '../cryptography/cryptography.module'
-import { DatabaseModule } from '../database/database.module'
+import { UploadAndCreateAttachmentUseCase } from '@/domain/forum/application/use-cases/upload-and-create-attachment'
 import { AnswerQuestionController } from './controllers/answer-question.controller'
 import { AuthenticateController } from './controllers/authenticate.controller'
 import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller'
@@ -41,7 +44,7 @@ import { GetQuestionBySlugController } from './controllers/get-question-by-slug.
 import { UploadAttachmentController } from './controllers/upload-attachment.controller'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule],
+  imports: [DatabaseModule, CryptographyModule, StorageModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -61,7 +64,7 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
     DeleteAnswerCommentController,
     FetchQuestionCommentsController,
     FetchAnswerCommentsController,
-    UploadAttachmentController
+    UploadAttachmentController,
   ],
   providers: [
     CreateQuestionUseCase,
@@ -81,7 +84,8 @@ import { UploadAttachmentController } from './controllers/upload-attachment.cont
     DeleteQuestionCommentUseCase,
     DeleteAnswerCommentUseCase,
     FetchQuestionCommentsUseCase,
-    FetchAnswerCommentsUseCase
+    FetchAnswerCommentsUseCase,
+    UploadAndCreateAttachmentUseCase,
   ],
 })
 export class HttpModule { }
