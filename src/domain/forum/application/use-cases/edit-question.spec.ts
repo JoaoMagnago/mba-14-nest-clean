@@ -2,21 +2,30 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { makeQuestion } from 'test/factories/make-question'
 import { makeQuestionAttachment } from 'test/factories/make-question-attachments'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
+import { InMemoryStudentsRepository } from 'test/repositories/in-memory-students-repository'
 import { EditQuestionUseCase } from './edit-question'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
+let inMemoryStudentsRepository: InMemoryStudentsRepository
 let sut: EditQuestionUseCase
 
 describe('Edit Question', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryStudentsRepository = new InMemoryStudentsRepository()
     inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
+      inMemoryAttachmentsRepository,
+      inMemoryStudentsRepository,
     )
+
     sut = new EditQuestionUseCase(
       inMemoryQuestionsRepository,
       inMemoryQuestionAttachmentsRepository,
@@ -30,7 +39,8 @@ describe('Edit Question', () => {
       },
       new UniqueEntityID('question-1'),
     )
-    inMemoryQuestionsRepository.create(newQuestion)
+
+    await inMemoryQuestionsRepository.create(newQuestion)
 
     inMemoryQuestionAttachmentsRepository.items.push(
       makeQuestionAttachment({
@@ -55,6 +65,7 @@ describe('Edit Question', () => {
       title: 'Pergunta teste',
       content: 'Conteúdo teste',
     })
+
     expect(
       inMemoryQuestionsRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)
@@ -66,14 +77,15 @@ describe('Edit Question', () => {
     ])
   })
 
-  it('should not be able to get edit a question from another user', async () => {
+  it('should not be able to edit a question from another user', async () => {
     const newQuestion = makeQuestion(
       {
         authorId: new UniqueEntityID('author-1'),
       },
       new UniqueEntityID('question-1'),
     )
-    inMemoryQuestionsRepository.create(newQuestion)
+
+    await inMemoryQuestionsRepository.create(newQuestion)
 
     const result = await sut.execute({
       questionId: newQuestion.id.toValue(),
@@ -87,14 +99,15 @@ describe('Edit Question', () => {
     expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
-  it('should sync new and removed attachments when editing a question', async () => {
+  it('should sync new and removed attachment when editing a question', async () => {
     const newQuestion = makeQuestion(
       {
         authorId: new UniqueEntityID('author-1'),
       },
       new UniqueEntityID('question-1'),
     )
-    inMemoryQuestionsRepository.create(newQuestion)
+
+    await inMemoryQuestionsRepository.create(newQuestion)
 
     inMemoryQuestionAttachmentsRepository.items.push(
       makeQuestionAttachment({
@@ -125,7 +138,7 @@ describe('Edit Question', () => {
         expect.objectContaining({
           attachmentId: new UniqueEntityID('3'),
         }),
-      ])
+      ]),
     )
   })
 })
