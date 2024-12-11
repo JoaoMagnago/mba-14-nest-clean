@@ -5,10 +5,10 @@ import {
   Controller,
   Get,
   Param,
-  Query
+  Query,
 } from '@nestjs/common'
 import { z } from 'zod'
-import { CommentPresenter } from '../presenters/comment-presenter'
+import { CommentWithAuthorPresenter } from '../presenters/comment-with-author-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -17,32 +17,30 @@ const pageQueryParamSchema = z
   .transform(Number)
   .pipe(z.number().min(1))
 
-type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
-
 const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+
+type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
 @Controller('/answers/:answerId/comments')
 export class FetchAnswerCommentsController {
-  constructor(
-    private fetchAnswerComments: FetchAnswerCommentsUseCase
-  ) { }
+  constructor(private fetchAnswerComments: FetchAnswerCommentsUseCase) { }
 
   @Get()
   async handle(
     @Query('page', queryValidationPipe) page: PageQueryParamSchema,
-    @Param('answerId') answerId: string
+    @Param('answerId') answerId: string,
   ) {
     const result = await this.fetchAnswerComments.execute({
       page,
-      answerId
+      answerId,
     })
 
     if (result.isLeft()) {
       throw new BadRequestException()
     }
 
-    const answerComments = result.value.answerComments
+    const comments = result.value.comments
 
-    return { comments: answerComments.map(CommentPresenter.toHTTP) }
+    return { comments: comments.map(CommentWithAuthorPresenter.toHTTP) }
   }
 }
