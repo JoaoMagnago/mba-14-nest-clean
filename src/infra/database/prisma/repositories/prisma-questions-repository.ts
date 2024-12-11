@@ -2,6 +2,7 @@ import { PaginationParams } from "@/core/repositories/pagination-params";
 import { QuestionAttachmentsRepository } from "@/domain/forum/application/repositories/question-attachments-repository";
 import { QuestionsRepository } from "@/domain/forum/application/repositories/questions-repository";
 import { Question } from "@/domain/forum/enterprise/entities/question";
+import { QuestionDetails } from "@/domain/forum/enterprise/entities/value-objects/question-details";
 import { Injectable } from "@nestjs/common";
 import { PrismaQuestionMapper } from "../mappers/prisma-question-mapper";
 import { PrismaService } from "../prisma.service";
@@ -80,6 +81,10 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
     }
 
     return PrismaQuestionMapper.toDomain(question)
+  }
+
+  async findDetailsBySlug(slug: string): Promise<QuestionDetails | null> {
+    throw new Error("Method not implemented.");
   }
 
   async findManyRecent({ page }: PaginationParams): Promise<Question[]> {
