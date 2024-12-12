@@ -1,6 +1,7 @@
 import { Either, left, right } from '@/core/either'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { Notification } from '../../enterprise/entities/notification'
 import { NotificationsRepository } from '../repositories/notifications-repository'
 
@@ -16,8 +17,8 @@ type ReadNotificationUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class ReadNotificationUseCase {
-  // eslint-disable-next-line prettier/prettier
   constructor(private notificationsRepository: NotificationsRepository) { }
 
   async execute({
@@ -39,8 +40,6 @@ export class ReadNotificationUseCase {
 
     await this.notificationsRepository.save(notification)
 
-    return right({
-      notification,
-    })
+    return right({ notification })
   }
 }
